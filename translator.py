@@ -16,23 +16,25 @@ import sys
 import re
 
 def translate(text, lang):
-    # Define a dictionary to hold the mappings of tokens to placeholders
+    import re
+    from deep_translator import GoogleTranslator
+
     placeholders = {}
 
-    # Use a regular expression to find all the tokens
+    # Extract tokens like %(name)s
     tokens = re.findall(r'%\((.*?)\)s', text)
 
-    # Replace each token with a unique placeholder
+    # Replace each token with a very "safe" placeholder like {{0}}, {{1}}, etc.
     for i, token in enumerate(tokens):
-        placeholder = f'__PLACEHOLDER_{i}__'
+        placeholder = f'{{{{{i}}}}}'  # Results in {{0}}, {{1}}, etc.
         placeholders[placeholder] = f'%({token})s'
         text = text.replace(f'%({token})s', placeholder)
 
-    # Perform the translation
+    # Translate
     translator = GoogleTranslator(source='auto', target=lang)
     translated_text = str(translator.translate(text))
 
-    # Replace the placeholders back with the original tokens
+    # Replace placeholders back with original tokens
     for placeholder, token in placeholders.items():
         translated_text = translated_text.replace(placeholder, token)
 
@@ -82,7 +84,7 @@ if __name__ == '__main__':
                         print(f"Found file: {path.join(root, _file)}")
                         print("Kindly provide the language code (ISO, 2 chars) to translate to: ")
                         lang = input()
-                        if lang == "skip": continue                        
+                        if lang == "skip": continue
                         if len(lang) != 2:
                             print("Invalid language code. Please provide a valid language code.")
                             exit()
