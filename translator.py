@@ -82,6 +82,7 @@ if __name__ == '__main__':
                         print(f"Found file: {path.join(root, _file)}")
                         print("Kindly provide the language code (ISO, 2 chars) to translate to: ")
                         lang = input()
+                        if lang == "skip": continue                        
                         if len(lang) != 2:
                             print("Invalid language code. Please provide a valid language code.")
                             exit()
