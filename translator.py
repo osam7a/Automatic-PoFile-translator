@@ -21,14 +21,16 @@ def translate(text, lang):
 
     placeholders = {}
 
-    # Extract tokens like %(name)s
-    tokens = re.findall(r'%\((.*?)\)s', text)
+    # Extract tokens like %(name)s, %(num)d, etc.
+    tokens = re.findall(r'%\((.*?)\)[a-zA-Z]', text)
 
     # Replace each token with a very "safe" placeholder like {{0}}, {{1}}, etc.
     for i, token in enumerate(tokens):
+        # Get the full match including the format specifier
+        full_token = re.findall(r'%\(' + token + r'\)[a-zA-Z]', text)[0]
         placeholder = f'{{{{{i}}}}}'  # Results in {{0}}, {{1}}, etc.
-        placeholders[placeholder] = f'%({token})s'
-        text = text.replace(f'%({token})s', placeholder)
+        placeholders[placeholder] = full_token
+        text = text.replace(full_token, placeholder)
 
     # Translate
     translator = GoogleTranslator(source='auto', target=lang)
